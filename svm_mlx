@@ -1,0 +1,63 @@
+tr = readtable ('wellOrg_data_tr_ts.xlsx'); 
+%tst = readtable ('_testData_Final__SVM.csv'); 
+X = tr(:,1:2); 
+Y = tr.Description; 
+
+t = templateSVM('Standardize',true,'SaveSupportVectors',true);
+predictorNames = {'Resistivity','Moisture'};
+responseName = 'Type of Soil';
+classNames = {'Sandy loam','Clayey Silt','unknown experimental soil_1', 'unknown experimental soil_2','Blue clay' }; % Specify class order
+Mdl = fitcecoc(X,Y,'Learners',t,'ResponseName',responseName,'PredictorNames',predictorNames,'ClassNames',classNames)
+
+L = size(Mdl.CodingMatrix,1); % Number of SVMs
+sv = cell(L,1); % Preallocate for support vector indices
+for j = 1:L
+    SVM = Mdl.BinaryLearners{j};
+    sv{j} = SVM.SupportVectors;
+    sv{j} = sv{j}.*SVM.Sigma + SVM.Mu;
+end
+
+figure
+gscatter(X.Resistivity,X.Moisture,Y);
+title('A Scatter Diagram of the ECOC Support Vector')
+xlabel(predictorNames{1})
+ylabel(predictorNames{2})
+hold on
+markers = {'ko','ro','bo', 'go', 'mo'}; % Should be of length L
+L
+for j = 1:L
+    svs = sv{j};
+    plot(svs(:,1),svs(:,2),markers{j},'MarkerSize',10 + (j - 1)*2);
+end
+legend([classNames,{'Support vectors (Sandy loam) - SVM 1',...
+    'Support vectors (Clayey Silt)- SVM 2','Support vectors (unknown experimental soil_1)- SVM 3', 'Support vectors (unknown experimental soil_2)- SVM 4', 'Support vectors (Blue clay)- SVM 5'}],...
+    'Location','Best')
+hold off
+
+resubLoss(Mdl)
+
+% %Training tghe SVM model 
+% Mdl1 = fitcecoc(tr,"Description");
+% Mdl1.CodingMatrix
+% %L=size(Mdl1.CodingMatrix,2); %numner of SVMs
+% L=42; 
+% sv = cell(L,1); 
+% for j = 1:L
+%     SVM = Mdl1.BinaryLearners{j}; 
+%     sv{j} = SVM.SupportVectors; 
+%     sv{j} = sv{j}.*SVM.Sigma + SVM.Mu; 
+% end
+% figure
+% gscatter(xtr, ytr, tr.Description); 
+% sv(1,1)
+% hold on
+% for i = 1:L
+%     svs = sv{i};
+%     plot(svs(:,1), svs(:,2)); 
+% end
+% title('A Scatter Diagram of the ECOC Support Vector')
+% xlabel(predictorNames{1})
+% ylabel(predictorNames{2})
+% legend([classNames, {'', '','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','Support vector-SVM 41 (unknown soil_1)','Support vector-SVM 42 (unknown soil_2)',}], 'Location', 'Best')
+% hold off 
+% 
