@@ -1,0 +1,20 @@
+%read training data
+training = readtable ('trainingData_model.csv'); 
+
+% read testing data
+
+testing = readtable ('ModelTesting_data.csv'); 
+
+%fit/train the data and set for 5 nearest Neighbor 
+
+knnmodel = fitcknn(training,"Description", "NumNeighbors",5)
+knnmodel
+%prediction 
+predictions = predict(knnmodel, testing);
+predictions
+%confusion chart 
+%testing.Description
+cm=confusionchart(testing.Description,predictions);
+cm.Title = 'Classification of the type of soil using k-NN'; 
+cm.RowSummary = 'row-normalized'; 
+cm.ColumnSummary = 'column-normalized';
