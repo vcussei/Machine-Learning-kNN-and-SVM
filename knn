@@ -1,0 +1,29 @@
+close all; 
+clear all;
+clc
+%T=readtable ('description_.csv');
+%T=readtable ('My_dataset.csv');
+T=readtable ('EXPERI_DESCRIP_PLUS_MODEL__.csv');
+plx=load('newModel_3.csv');
+p1=load("resi_corrosnLev_.csv"); 
+plot(p1(:,1),p1(:,2),'x') %plot of the resistivity vs corrosion level to ductile-iron pipe; 
+Mdl = KDTreeSearcher(plx)
+figure 
+%this points are from the experiment conducted by me
+%for more information about its electrode depth and separatioin see the
+%excell file 'experimental data.xlsx'
+%[18.56 90; 1.80 10];
+newpoint2 = [1.80 10];%[12.40 65];%[21.82 70; 38.03 42; 12.40 65; 9.93 10; 6.64 35; 18.56 90; 8.33 90; 1.80 10; 5.44 65; 53.99 10];
+gscatter(plx(:,1),plx(:,2),T.Description); %number of row in the My_dataset_conflict.csv must be the same as in the new model.
+legend('location','best')
+[n2,d2] = knnsearch(Mdl,newpoint2,'k',4);
+line(plx(n2,1),plx(n2,2),'color',[.5 .5 .5],'marker','o',...
+   'linestyle','none','markersize',15) % circle the 10 nearst points for each testing points
+line(newpoint2(:,1),newpoint2(:,2),'marker','x','color','k',...
+   'markersize',20,'linewidth',2,'linestyle','none') % mark with 'x' my testing points 
+%n2-it contains the nearst points of my testing point. ex-contains the 10
+%nearst point of my first testing data point in the array. 
+tabulate(T.Description(n2(1,:)))% this provides the number of points/percentage in the first row that belongs to a certain specie 
+% tabulate(T.Description(n2(10,:)))
+%plx(n2,:) %provides the table of nearst neibohrs. the first 10 (I am finding the nearst neighbors) correspond to the first element of my testing data element 
+
