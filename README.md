@@ -12,7 +12,7 @@ You can run the code by:
 -copy and paste the svm_mlx file. 
 -add the loaded files to your matlab path 
 -run 
-3-confusion matrix 
+3-confusionMatrix 
 -copy and paste the confusion matrix file. 
 -add the loaded files to your matlab path 
 -run 
